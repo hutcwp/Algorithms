@@ -1,3 +1,7 @@
+import question.Solution;
+import singleton.Singleton;
+import singleton.SingletonA;
+
 /**
  * for java code
  * created by hutcwp
@@ -5,7 +9,8 @@
  */
 public class Main {
 
-    public static void main(String[] args) throws Exception {
-        System.out.println("hello world!");
+    public static void main(String[] args) {
+        StringBuffer sb = new StringBuffer("a c");
+        System.out.println(new Solution().replaceSpace(sb));
     }
 }
