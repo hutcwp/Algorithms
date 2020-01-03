@@ -3,10 +3,15 @@ package question;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Stack;
 
 public class Solution {
+
+    /**
+     * 用两个栈来实现一个队列，完成队列的Push和Pop操作。 队列中的元素为int类型。
+     */
+    Stack<Integer> stack1 = new Stack<Integer>();
+    Stack<Integer> stack2 = new Stack<Integer>();
 
     /**
      * 题目描述
@@ -237,6 +242,124 @@ public class Solution {
         return root;
     }
 
+    public void push(int node) {
+        stack1.add(node);
+    }
+
+    public int pop() {
+        if (stack2.isEmpty() && !stack1.isEmpty()) {
+            while (!stack1.isEmpty()) {
+                stack2.add(stack1.pop());
+            }
+        }
+
+        if (!stack2.isEmpty()) {
+            return stack2.pop();
+        }
+        return -1;
+    }
+
+    /**
+     * 题目描述
+     * 把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。
+     * 输入一个非递减排序的数组的一个旋转，输出旋转数组的最小元素。
+     * 例如数组{3,4,5,1,2}为{1,2,3,4,5}的一个旋转，该数组的最小值为1。
+     * NOTE：给出的所有元素都大于0，若数组大小为0，请返回0。
+     *
+     * @param array 数组
+     * @return 最小值
+     */
+    public int minNumberInRotateArray(int[] array) {
+        int len = array.length;
+        int min = 0;
+        if (len == 0) {
+        } else if (len == 1) {
+            min = array[0];
+        } else {
+            int left = 0;
+            int right = len - 1;
+            while (left + 1 < right) {
+                int mid = (right + left) >> 1;
+                if (array[left] > array[mid]) {
+                    right = mid;
+                } else if (array[mid] > array[right]) {
+                    left = mid;
+                }
+            }
+            min = Math.min(array[left], array[right]);
+        }
+
+        return min;
+    }
+
+    /**
+     * 题目描述
+     * 大家都知道斐波那契数列，现在要求输入一个整数n，请你输出斐波那契数列的第n项（从0开始，第0项为0）。
+     * n<=39
+     *
+     * @param n
+     * @return
+     */
+    public long Fibonacci(int n) {
+        if (n < 2) {
+            return n;
+        }
+        long a = 0;
+        long b = 1;
+        long m = b;
+        for (int i = 2; i <= n; i++) {
+            m = a + b;
+            a = b;
+            b = m;
+        }
+        return m;
+    }
+
+    /**
+     * 题目描述
+     * 一只青蛙一次可以跳上1级台阶，也可以跳上2级。求该青蛙跳上一个n级的台阶总共有多少种跳法（先后次序不同算不同的结果）。
+     *
+     * @param n
+     * @return
+     */
+    public int JumpFloor(int n) {
+        if (n <= 2) {
+            return n;
+        }
+        int a = 1;
+        int b = 2;
+        int m = b;
+        for (int i = 3; i <= n; i++) {
+            m = a + b;
+            a = b;
+            b = m;
+        }
+        return m;
+    }
+
+    /**
+     * 题目描述
+     * 一只青蛙一次可以跳上1级台阶，也可以跳上2级……它也可以跳上n级。求该青蛙跳上一个n级的台阶总共有多少种跳法。
+     *
+     * @param number
+     * @return
+     */
+    int jumpFloorII(int number) {
+        if (number <= 2) {
+            return number;
+        }
+
+        int sum = 0;
+        int a = 1;
+        int b = 2;
+        for (int i = 3; i <= number; i++) {
+            sum = 2 * b;
+            b = sum;
+            a = b;
+        }
+        return sum;
+    }
+
     // Definition for binary tree
     public static class TreeNode {
         public TreeNode left;
@@ -259,5 +382,6 @@ public class Solution {
             this.val = val;
         }
     }
+
 
 }
