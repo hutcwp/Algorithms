@@ -340,6 +340,16 @@ public class Solution {
     /**
      * 题目描述
      * 一只青蛙一次可以跳上1级台阶，也可以跳上2级……它也可以跳上n级。求该青蛙跳上一个n级的台阶总共有多少种跳法。
+     * 链接：https://www.nowcoder.com/questionTerminal/22243d016f6b47f2a6928b4313c85387?f=discussion
+     * 来源：牛客网
+     * <p>
+     * f(n-1) = f(0) + f(1)+f(2)+f(3) + ... + f((n-1)-1) = f(0) + f(1) + f(2) + f(3) + ... + f(n-2)
+     * <p>
+     * f(n) = f(0) + f(1) + f(2) + f(3) + ... + f(n-2) + f(n-1) = f(n-1) + f(n-1)
+     * <p>
+     * 可以得出：
+     * <p>
+     * f(n) = 2*f(n-1)
      *
      * @param number
      * @return
@@ -358,6 +368,47 @@ public class Solution {
             a = b;
         }
         return sum;
+    }
+
+    /**
+     * 题目描述
+     * 我们可以用2*1的小矩形横着或者竖着去覆盖更大的矩形。请问用n个2*1的小矩形无重叠地覆盖一个2*n的大矩形，总共有多少种方法？
+     *
+     * @param target
+     * @return
+     */
+    public int RectCover(int target) {
+        if (target <= 2) {
+            return target;
+        }
+
+        int sum = 0;
+        int a = 1;
+        int b = 2;
+        for (int i = 3; i <= target; i++) {
+            sum = b + a;
+            a = b;
+            b = sum;
+        }
+        return sum;
+    }
+
+    /**
+     * 题目描述
+     * 输入一个整数，输出该数二进制表示中1的个数。其中负数用补码表示。
+     *
+     * @param n
+     * @return
+     */
+    public int NumberOf1(int n) {
+        int count = 0;
+        while (n != 0) {
+            if ((n & 1) == 1) {
+                count++;
+            }
+            n = n >>> 1; //>>>无视符号位右移，左边补0。>>右移，符号位负数补1，整数补0，会有问题
+        }
+        return count;
     }
 
     // Definition for binary tree
