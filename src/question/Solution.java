@@ -271,25 +271,40 @@ public class Solution {
      */
     public int minNumberInRotateArray(int[] array) {
         int len = array.length;
-        int min = 0;
         if (len == 0) {
-        } else if (len == 1) {
-            min = array[0];
-        } else {
-            int left = 0;
-            int right = len - 1;
-            while (left + 1 < right) {
-                int mid = (right + left) >> 1;
-                if (array[left] > array[mid]) {
-                    right = mid;
-                } else if (array[mid] > array[right]) {
-                    left = mid;
-                }
-            }
-            min = Math.min(array[left], array[right]);
+            return 0;
         }
 
-        return min;
+        int left = 0;
+        int right = len - 1;
+        int mid = left;
+
+        while (array[left] >= array[right]) {
+            if (right - left == 1) {
+                mid = right;
+                break;
+            }
+
+            mid = left + (right - left) / 2;
+
+            if (array[left] == array[right] && array[left] == array[mid]) {
+                //顺序查找,122222->222212或221222,这两种情况无法判断，需要顺序查找
+                for (int i = 0; i <= right; i++) {
+                    if (array[i] < array[mid]) {
+                        mid = i;
+                    }
+                }
+                break;
+            }
+
+            if (array[mid] >= array[left]) {
+                left = mid;
+            } else {
+                right = mid;
+            }
+        }
+
+        return array[mid];
     }
 
     /**
