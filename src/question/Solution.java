@@ -426,6 +426,49 @@ public class Solution {
         return count;
     }
 
+    /**
+     * 题目描述
+     * 给定一个double类型的浮点数base和int类型的整数exponent。求base的exponent次方。
+     * <p>
+     * 保证base和exponent不同时为0
+     *
+     * @param base
+     * @param exponent
+     * @return
+     */
+    public double Power(double base, int exponent) {
+        if (exponent == 0) {
+            return 1;
+        }
+
+        if (base == 0.0 && exponent < 0) {
+            return 0; // 对0求倒数没有意义
+        }
+
+        if (exponent < 0) {
+            return 1 / getPower(base, -exponent);
+        } else {
+            return getPower(base, exponent);
+        }
+
+    }
+
+    public double getPower(double base, int exponent) {
+        if (exponent == 0) {
+            return 1;
+        }
+        if (exponent == 1) {
+            return base;
+        }
+
+        double ret = getPower(base, exponent >> 1);
+        ret *= ret;
+        if ((exponent & 0x1) == 1) {
+            ret *= base;
+        }
+        return ret;
+    }
+
     // Definition for binary tree
     public static class TreeNode {
         public TreeNode left;
