@@ -469,6 +469,201 @@ public class Solution {
         return ret;
     }
 
+    /**
+     * 大数相加，num1和num2都大于等于0，如果一方小于0就变成相减了。
+     *
+     * @param num1
+     * @param num2
+     * @return
+     */
+    public String addStrings(String num1, String num2) {
+        Stack<Integer> res = new Stack<>();
+        int len1 = num1.length() - 1;
+        int len2 = num2.length() - 1;
+        int flag = 0;
+        while (len1 >= 0 || len2 >= 0 || flag > 0) {
+            int sum = 0;
+            if (len1 >= 0) {
+                sum += num1.charAt(len1--) - '0';
+            }
+            if (len2 >= 0) {
+                sum += num2.charAt(len2--) - '0';
+            }
+            sum += flag;
+            flag = sum / 10;
+            sum = sum % 10;
+            res.add(sum);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        while (!res.isEmpty()) {
+            sb.append(res.pop());
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 大数乘法
+     *
+     * @param num1
+     * @param num2
+     * @return
+     */
+    public String multiply(String num1, String num2) {
+        if (num1.equals("0") || num2.equals("0")) {
+            return "0";
+        }
+        // 符号
+        boolean op = false;
+        if (num1.charAt(0) == '-') {
+            op = true;
+            num1 = num1.replace("-", "");
+        }
+        if (num2.charAt(0) == '-') {
+            op = !op;
+            num2 = num2.replace("-", "");
+        }
+
+        char[] res = new char[num1.length() + num2.length()];
+        for (int i = 0; i < res.length; i++) {
+            res[i] = 'n';
+        }
+
+        char[] n1 = num1.toCharArray();
+        char[] n2 = num2.toCharArray();
+
+        int flag = 0; //进位
+        int cur = 0;//当前位数
+        int curres = 0; //当前结果
+
+        for (int i = n2.length - 1; i >= 0; i--) {
+            cur = n2.length - i - 1;
+            flag = 0;
+            for (int j = n1.length - 1; j >= 0; j--) {
+                int a = n2[i] - 48;
+                int b = n1[j] - 48;
+                int sum = a * b + flag; //乘积加上进位
+                if (res[cur] != 'n') {
+                    sum += (res[cur] - 48);
+                }
+                curres = sum % 10;
+                flag = sum / 10;
+                res[cur] = (char) (curres + 48);
+                cur++;
+            }
+
+            // 处理最后一位进位
+            if (flag != 0) {
+                res[cur] = (char) (flag + 48);
+            }
+
+        }
+
+        // 结果倒置
+        StringBuilder sb = new StringBuilder();
+        for (int i = res.length - 1; i >= 0; i--) {
+            if (res[i] != 'n') {
+                sb.append(res[i]);
+            }
+        }
+
+        //处理符号
+        if (op) {
+            return "-" + sb.toString();
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 题目描述
+     * 输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前半部分，
+     * 所有的偶数位于数组的后半部分，并保证奇数和奇数，偶数和偶数之间的相对位置不变。
+     * 1 2 4 3 5 6 8
+     *
+     * @param array
+     */
+    public void reOrderArray(int[] array) {
+        int len = array.length;
+        if (len <= 1) {
+            return;
+        }
+        int pre = 0;
+        int end = len - 1;
+        int p1 = 0, p2 = 0;//p1代表奇数，p2代表偶数
+        while (p1 <= end && p2 <= end) {
+            while (p2 <= end && array[p2] % 2 == 0) {
+                p2++;
+            }
+            p1 = p2 + 1;
+            while (p1 <= end && array[p1] % 2 == 1) {
+                p1++;
+            }
+            if (p1 > end || p2 > end) {
+                break;
+            }
+            int tmp = array[p1];
+            array[p1++] = array[p2];
+            array[p2++] = tmp;
+        }
+    }
+
+    /**
+     * 倒数第k个链表
+     *
+     * @param head
+     * @param k
+     * @return
+     */
+    public ListNode FindKthToTail(ListNode head, int k) {
+        if (head == null || k < 0) {
+            return null;
+        }
+
+        ListNode cur = head;
+        int num = k;
+        while (num-- > 0 && head != null) {
+            head = head.next;
+            // num--;
+        }
+
+        while (head != null) {
+            head = head.next;
+            cur = cur.next;
+        }
+
+        if (num > 0) {
+            //k>n
+            return null;
+        }
+        return cur;
+
+    }
+
+    /**
+     * 题目描述
+     * 输入一个链表，反转链表后，输出新链表的表头。
+     * 1   | 2   | 3
+     * p1  | p2  | head
+     * @param head
+     * @return
+     */
+    public ListNode ReverseList(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+
+        ListNode p1;
+        ListNode p2 = null;
+        while (head != null) {
+            p1 = p2;
+            p2 = head;
+            head = head.next;
+            p2.next = p1;
+        }
+
+        return p2;
+    }
+
     // Definition for binary tree
     public static class TreeNode {
         public TreeNode left;
@@ -483,7 +678,7 @@ public class Solution {
     /**
      * 链表结构
      */
-    public class ListNode {
+    public static class ListNode {
         public int val;
         public ListNode next = null;
 
