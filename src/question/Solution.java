@@ -588,22 +588,16 @@ public class Solution {
             return;
         }
         int pre = 0;
-        int end = len - 1;
-        int p1 = 0, p2 = 0;//p1代表奇数，p2代表偶数
-        while (p1 <= end && p2 <= end) {
-            while (p2 <= end && array[p2] % 2 == 0) {
-                p2++;
+
+        for (int i = 0; i < len; i++) {
+            int tmp = array[i];
+            if (tmp % 2 == 1) {
+                for (int j = 0; j < i; j++) {
+                    if (array[j] % 2 == 0) {
+
+                    }
+                }
             }
-            p1 = p2 + 1;
-            while (p1 <= end && array[p1] % 2 == 1) {
-                p1++;
-            }
-            if (p1 > end || p2 > end) {
-                break;
-            }
-            int tmp = array[p1];
-            array[p1++] = array[p2];
-            array[p2++] = tmp;
         }
     }
 
@@ -621,9 +615,9 @@ public class Solution {
 
         ListNode cur = head;
         int num = k;
-        while (num-- > 0 && head != null) {
+        while (num > 0 && head != null) {
             head = head.next;
-            // num--;
+            num--;
         }
 
         while (head != null) {
@@ -685,12 +679,47 @@ public class Solution {
         if (list1.val <= list2.val) {
             head = list1;
             head.next = Merge(list1.next, list2);
-        }else {
+        } else {
             head = list2;
             head.next = Merge(list1, list2.next);
         }
 
         return head;
+    }
+
+    /**
+     * 题目描述
+     * 输入两棵二叉树A，B，判断B是不是A的子结构。（ps：我们约定空树不是任意一个树的子结构）
+     *
+     * @param root1
+     * @param root2
+     * @return
+     */
+    public boolean HasSubtree(TreeNode root1, TreeNode root2) {
+        //注意细节root2 == null，不判断后面会报空指针
+        if (root2 == null || root1 == null) {
+            return false;
+        }
+
+
+        return isSubtree(root1, root2) || HasSubtree(root1.left, root2) || HasSubtree(root1.right, root2);
+    }
+
+    public boolean isSubtree(TreeNode root1, TreeNode root2) {
+        //注意，因为是子结构，当root2==null时，则判断结束
+        if (root2 == null) {
+            return true;
+        }
+
+        if (root1 != null) {
+            if (root1.val != root2.val) {
+                return false;
+            } else {
+                return isSubtree(root1.left, root2.left) && isSubtree(root1.right, root2.right);
+            }
+
+        }
+        return false;
     }
 
     // Definition for binary tree
