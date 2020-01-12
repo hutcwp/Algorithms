@@ -3,6 +3,7 @@ package question;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Stack;
 
 public class Solution {
@@ -721,6 +722,213 @@ public class Solution {
         }
         return false;
     }
+
+    /**
+     * 题目描述
+     * 操作给定的二叉树，将其变换为源二叉树的镜像。
+     *
+     * @param root
+     */
+    public void Mirror(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+
+        TreeNode tmp = root.left;
+        root.left = root.right;
+        root.right = tmp;
+        Mirror(root.left);
+        Mirror(root.right);
+    }
+
+    /**
+     * 题目描述
+     * 输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字，
+     * 例如，如果输入如下4 X 4矩阵：
+     * 1  2  3  4
+     * 5  6  7  8
+     * 9  10 11 12
+     * 13 14 15 16
+     * 则依次打印出数字1,2,3,4,8,12,16,15,14,13,9,5,6,7,11,10.
+     *
+     * @param matrix
+     * @return
+     */
+    public ArrayList<Integer> printMatrix(int[][] matrix) {
+        ArrayList<Integer> res = new ArrayList<>();
+        if (matrix.length == 0) {
+            return res;
+        }
+
+        int left = 0;
+        int top = 0;
+        int right = matrix[0].length - 1;
+        int bottom = matrix.length - 1;
+
+        int col = right;
+        int row = bottom;
+        // 细节是魔鬼
+        while (left * 2 < col + 1 && top * 2 < row + 1) {
+            for (int i = left; i <= right; i++) {
+                res.add(matrix[top][i]);
+                System.out.println(matrix[top][i]);
+            }
+
+            if (top < bottom) {
+                for (int i = top + 1; i <= bottom; i++) {
+                    res.add(matrix[i][right]);
+                    System.out.println(matrix[i][right]);
+                }
+            }
+
+
+            if (top < bottom && left < right) {
+                for (int i = right - 1; i >= left; i--) {
+                    res.add(matrix[bottom][i]);
+                    System.out.println(matrix[bottom][i]);
+                }
+            }
+
+
+            if (top < bottom - 1 && left < right) {
+                for (int i = bottom - 1; i > top; i--) {
+                    res.add(matrix[i][left]);
+                    System.out.println(matrix[i][left]);
+                }
+            }
+
+            left++;
+            right--;
+            top++;
+            bottom--;
+        }
+
+        return res;
+    }
+
+    /**
+     * 题目描述
+     * 输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否可能为该栈的弹出顺序。
+     * 假设压入栈的所有数字均不相等。
+     * 例如序列1,2,3,4,5是某栈的压入顺序，序列4,5,3,2,1是该压栈序列对应的一个弹出序列，
+     * 但4,3,5,1,2就不可能是该压栈序列的弹出序列。
+     * （注意：这两个序列的长度是相等的）
+     *
+     * @param pushA
+     * @param popA
+     * @return
+     */
+    public boolean IsPopOrder(int[] pushA, int[] popA) {
+        int lenA = pushA.length;
+        int lenB = popA.length;
+
+        if (lenA != lenB) {
+            return false;
+        }
+        if (lenA == 0) {
+            return true;
+        }
+
+        Stack<Integer> s = new Stack<>();
+
+        int j = 0;
+        for (int i = 0; i < lenA; i++) {
+            //如果入栈元素等于出栈元素，就忽略，否则入栈s
+            if (pushA[i] == popA[j]) {
+                j++;
+            } else {
+                s.push(pushA[i]);
+            }
+        }
+
+        // s非空，一个一个抛出来比对
+        while (!s.isEmpty() && j < lenB) {
+            if (s.peek() == popA[j]) {
+                s.pop();
+                j++;
+            } else {
+                //如果栈顶元素不等于出栈序列当前元素即结束
+                break;
+            }
+        }
+
+        return s.isEmpty();
+    }
+
+    /**
+     * 题目描述
+     * 从上往下打印出二叉树的每个节点，同层节点从左至右打印。
+     * 层次遍历
+     *
+     * @param root
+     * @return
+     */
+    public ArrayList<Integer> PrintFromTopToBottom(TreeNode root) {
+        ArrayList<Integer> res = new ArrayList<>();
+        if (root == null) {
+            return res;
+        }
+
+        Queue<TreeNode> queue = new LinkedList<>();
+
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.peek();
+            queue.remove();
+            res.add(node.val);
+            if (node.left != null) {
+                queue.add(node.left);
+            }
+            if (node.right != null) {
+                queue.add(node.right);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 题目描述
+     * 输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。如果是则输出Yes,否则输出No。
+     * 假设输入的数组的任意两个数字都互不相同。
+     *
+     * @param sequence
+     * @return
+     */
+    public boolean VerifySquenceOfBST(int[] sequence) {
+        if (sequence.length == 0) {
+            return false;
+        }
+
+        return isSquenceOfBST(sequence, 0, sequence.length - 1);
+    }
+
+    private boolean isSquenceOfBST(int[] sequence, int start, int end) {
+        if (start >= end) {
+            return true;
+        }
+
+        int root = sequence[end];
+        int i = start;
+        int j = start;
+        for (i = start; i < end; i++) {
+            if (sequence[i] > root) {
+                break;
+            }
+        }
+
+        j = i; //注意这里赋值，不能放到上面的循环退出条件中。存在右子树为空的情况
+        for (; j < end; j++) {
+            if (sequence[j] < root) {
+                return false;
+            }
+        }
+
+        boolean left = isSquenceOfBST(sequence, start, i - 1);
+        boolean right = isSquenceOfBST(sequence, i, end - 1);
+        return left && right;
+    }
+
+
 
     // Definition for binary tree
     public static class TreeNode {
