@@ -928,7 +928,47 @@ public class Solution {
         return left && right;
     }
 
+    /**
+     * 题目描述
+     * 输入一颗二叉树的跟节点和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。
+     * 路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。
+     * (注意: 在返回值的list中，数组长度大的数组靠前)
+     *
+     * @param root
+     * @param target
+     * @return
+     */
+    public ArrayList<ArrayList<Integer>> FindPath(TreeNode root, int target) {
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+        ArrayList<Integer> path = new ArrayList<>();
+        if (root != null) {
+            dfsPath(root, target, res, path);
+        }
 
+        return res;
+    }
+
+    private void dfsPath(TreeNode node, int target, ArrayList<ArrayList<Integer>> list,
+                         ArrayList<Integer> path) {
+        if (node == null) {
+            return;
+        }
+
+        path.add(node.val);
+
+        if (node.left == null && node.right == null) {
+            if (target - node.val == 0) {
+                //细节1
+                ArrayList<Integer> r = new ArrayList<>(path);
+                list.add(r);
+            }
+        }
+
+        dfsPath(node.left, target - node.val, list, path);
+        dfsPath(node.right, target - node.val, list, path);
+        //细节2，Java的list的remove需要使用Integer.valueOf(node.val)
+        path.remove(Integer.valueOf(node.val));
+    }
 
     // Definition for binary tree
     public static class TreeNode {
