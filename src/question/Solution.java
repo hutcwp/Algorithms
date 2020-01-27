@@ -970,6 +970,45 @@ public class Solution {
         path.remove(Integer.valueOf(node.val));
     }
 
+    public RandomListNode Clone(RandomListNode pHead) {
+        if (pHead == null) {
+            return null;
+        }
+
+        RandomListNode cloneNode;
+        RandomListNode cloneHead;
+        RandomListNode curNode = pHead;
+        //1.复制结点
+        while (curNode != null) {
+            cloneNode = new RandomListNode(curNode.label);
+            cloneNode.next = curNode.next;
+            curNode.next = cloneNode;
+            curNode = cloneNode.next;
+        }
+
+        //调整随机结点
+        curNode = pHead;
+        cloneHead = pHead.next;
+        while (curNode != null) {
+            if (curNode.random != null) {
+                curNode.next.random = curNode.random.next;
+            }
+            curNode = curNode.next.next;
+        }
+
+        //分离原结点和新结点
+        curNode = pHead;
+        cloneNode = cloneHead;
+        while (curNode != null) {
+            curNode.next = cloneNode.next;
+            cloneNode.next = cloneNode.next ==null? null:   cloneNode.next.next;
+            curNode = curNode.next;
+            cloneNode = cloneNode.next;
+        }
+
+        return cloneHead;
+    }
+
     // Definition for binary tree
     public static class TreeNode {
         public TreeNode left;
@@ -990,6 +1029,16 @@ public class Solution {
 
         public ListNode(int val) {
             this.val = val;
+        }
+    }
+
+    public class RandomListNode {
+        int label;
+        RandomListNode next = null;
+        RandomListNode random = null;
+
+        RandomListNode(int label) {
+            this.label = label;
         }
     }
 
