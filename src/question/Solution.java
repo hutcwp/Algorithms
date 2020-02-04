@@ -1,9 +1,14 @@
 package question;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
 
 public class Solution {
@@ -970,6 +975,15 @@ public class Solution {
         path.remove(Integer.valueOf(node.val));
     }
 
+    /**
+     * 题目描述
+     * 输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。
+     *
+     * @param pRootOfTree
+     * @return
+     */
+    TreeNode lastRoot = null;
+
     public RandomListNode Clone(RandomListNode pHead) {
         if (pHead == null) {
             return null;
@@ -1001,13 +1015,456 @@ public class Solution {
         cloneNode = cloneHead;
         while (curNode != null) {
             curNode.next = cloneNode.next;
-            cloneNode.next = cloneNode.next ==null? null:   cloneNode.next.next;
+            cloneNode.next = cloneNode.next == null ? null : cloneNode.next.next;
             curNode = curNode.next;
             cloneNode = cloneNode.next;
         }
 
         return cloneHead;
     }
+
+    public TreeNode Convert(TreeNode pRootOfTree) {
+
+        if (pRootOfTree == null) {
+            return null;
+        }
+
+        if (pRootOfTree.left == null && pRootOfTree.right == null) {
+            return pRootOfTree;
+        }
+
+        TreeNode left = Convert(pRootOfTree.left);
+        left.right = lastRoot;
+
+
+        TreeNode right = Convert(pRootOfTree.right);
+        lastRoot.right = right;
+
+
+        return left == null ? right : left;
+
+    }
+
+    /**
+     * 题目描述
+     * 输入一个字符串,按字典序打印出该字符串中字符的所有排列。
+     * 例如输入字符串abc,则打印出由字符a,b,c所能排列出来的所有字符串abc,acb,bac,bca,cab和cba。
+     * 输入描述:
+     * 输入一个字符串,长度不超过9(可能有字符重复),字符只包括大小写字母。
+     *
+     * @param str
+     * @return
+     */
+    public ArrayList<String> Permutation(String str) {
+        ArrayList<String> res = new ArrayList<>();
+        if (str == null || str.length() == 0) {
+            return res;
+        }
+
+        nextStr(res, 0, str.toCharArray());
+        Collections.sort(res);
+        return res;
+    }
+
+    public void nextStr(ArrayList<String> res, int cur, char c[]) {
+        if (cur == c.length - 1) {
+            res.add(String.valueOf(c));
+        }
+
+        Set<Character> charSet = new HashSet<>();
+        for (int i = cur; i < c.length; i++) {
+            if (cur == i || !charSet.contains(c[i])) {
+                charSet.add(c[i]);
+                swap(cur, i, c);
+                nextStr(res, cur + 1, c);
+                swap(cur, i, c);
+            }
+        }
+    }
+
+    private void swap(int start, int end, char c[]) {
+        char tmp = c[start];
+        c[start] = c[end];
+        c[end] = tmp;
+    }
+
+    /**
+     * 题目描述
+     * 数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。例如输入一个长度为9的数组{1,2,3,2,2,2,5,4,2}。
+     * 由于数字2在数组中出现了5次，超过数组长度的一半，因此输出2。如果不存在则输出0。
+     *
+     * @param array
+     * @return
+     */
+    public int MoreThanHalfNum_Solution(int[] array) {
+        if (array.length == 0) {
+            return 0;
+        }
+
+        int num = array[0];
+        int count = 1;
+        for (int i = 1; i < array.length; i++) {
+            if (num != array[i]) {
+                count--;
+            } else {
+                count++;
+            }
+
+            if (count == 0) {
+                num = array[i];
+                count = 1;
+            }
+        }
+
+        count = 0;
+        for (int anArray : array) {
+            if (anArray == num) {
+                count++;
+            }
+        }
+        return count > (array.length / 2) ? num : 0;
+    }
+
+    /**
+     * 题目描述
+     * 输入n个整数，找出其中最小的K个数。例如输入4,5,1,6,2,7,3,8这8个数字，则最小的4个数字是1,2,3,4,。
+     *
+     * @param input
+     * @param k
+     * @return
+     */
+    public ArrayList<Integer> GetLeastNumbers_Solution(int[] input, int k) {
+        ArrayList<Integer> res = new ArrayList<>();
+        if (input.length < k || k <= 0) {
+            return res;
+        }
+
+        PriorityQueue<Integer> queue = new PriorityQueue<>(Comparator.reverseOrder());
+        for (int item : input) {
+            if (queue.size() < k) {
+                queue.add(item);
+            } else {
+                // max heap
+                queue.size();
+                int max = queue.peek();
+                if (item < max) {
+                    queue.poll();
+                    queue.add(item);
+                }
+            }
+        }
+
+        res.addAll(queue);
+        return res;
+    }
+
+    /**
+     * 最大连续子序列的和
+     */
+    public int FindGreatestSumOfSubArray(int[] array) {
+        if (array.length == 1) {
+            return array[0];
+        }
+
+        int sum = array[0];
+        int cur = array[0];
+        for (int i = 1; i < array.length; i++) {
+            cur += array[i];
+            sum = Math.max(sum, cur);
+            if (cur < 0) {
+                cur = 0;
+            }
+        }
+        return sum;
+    }
+
+    /**
+     * 题目描述
+     * 求出1~13的整数中1出现的次数,并算出100~1300的整数中1出现的次数？
+     * 为此他特别数了一下1~13中包含1的数字有1、10、11、12、13因此共出现6次,但是对于后面问题他就没辙了。
+     * ACMer希望你们帮帮他,并把问题更加普遍化,可以很快的求出任意非负整数区间中1出现的次数（从1 到 n 中1出现的次数）。
+     *
+     * @param n
+     * @return
+     */
+    public int NumberOf1Between1AndN_Solution(int n) {
+        int count = 0;//1的个数
+        int i = 1;//当前位
+        int current = 0, after = 0, before = 0;
+        while ((n / i) != 0) {
+            current = (n / i) % 10; //高位数字
+            before = n / (i * 10); //当前位数字
+            after = n - (n / i) * i; //低位数字
+            //如果为0,出现1的次数由高位决定,等于高位数字 * 当前位数
+            if (current == 0) {
+                count += before * i;
+            }
+            //如果为1,出现1的次数由高位和低位决定,高位*当前位+低位+1
+            else if (current == 1) {
+                count += before * i + after + 1;
+            }
+            //如果大于1,出现1的次数由高位决定,//（高位数字+1）* 当前位数
+            else {
+                count += (before + 1) * i;
+            }
+            //前移一位
+            i = i * 10;
+        }
+        return count;
+    }
+
+    /**
+     * 题目描述
+     * 输入一个正整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
+     * 例如输入数组{3，32，321}，则打印出这三个数字能排成的最小数字为321323。
+     *
+     * @param numbers
+     * @return
+     */
+    public String PrintMinNumber(int[] numbers) {
+        int n;
+        StringBuilder result = new StringBuilder();
+        ArrayList<Integer> list = new ArrayList<>();
+        n = numbers.length;
+        for (int i = 0; i < n; i++) {
+            list.add(numbers[i]);
+
+        }
+        list.sort((str1, str2) -> {
+            String s1 = str1 + "" + str2;
+            String s2 = str2 + "" + str1;
+            return s1.compareTo(s2);
+        });
+
+        for (int s : list) {
+            result.append(s);
+        }
+        return result.toString();
+
+    }
+
+    /**
+     * 题目描述
+     * 把只包含质因子2、3和5的数称作丑数（Ugly Number）。
+     * 例如6、8都是丑数，但14不是，因为它包含质因子7。 习惯上我们把1当做是第一个丑数。求按从小到大的顺序的第N个丑数。
+     *
+     * @param index
+     * @return
+     */
+    public int GetUglyNumber_Solution(int index) {
+        if (index <= 6) {
+            return index;
+        }
+
+        int res[] = new int[100000];
+        res[0] = 1;
+        int cur = 0;
+        int num2_index = 0;
+        int num3_index = 0;
+        int num5_index = 0;
+        for (int i = 0; i < index; i++) {
+            int tmp_2 = 2 * res[num2_index];
+            int tmp_3 = 3 * res[num3_index];
+            int tmp_5 = 5 * res[num5_index];
+            int num = Math.min(tmp_2, Math.min(tmp_3, tmp_5));
+            res[++cur] = num;
+            if (tmp_2 == num) {
+                num2_index++;
+            }
+            if (tmp_3 == num) {
+                num3_index++;
+            }
+            if (tmp_5 == num) {
+                num5_index++;
+            }
+        }
+        return res[index - 1];
+    }
+
+    /**
+     * 题目描述
+     * 在一个字符串(0<=字符串长度<=10000，全部由字母组成)中找到第一个只出现一次的字符,并返回它的位置, 如果没有则返回 -1（需要区分大小写）.
+     *
+     * @param str
+     * @return
+     */
+    public int FirstNotRepeatingChar(String str) {
+        char cs[] = new char[256];
+        for (int i = 0; i < str.length(); i++) {
+            cs[str.charAt(i)]++;
+        }
+
+        for (int i = 0; i < str.length(); i++) {
+            if (cs[str.charAt(i)] == 1) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 题目描述
+     * 输入两个链表，找出它们的第一个公共结点。
+     *
+     * @param pHead1
+     * @param pHead2
+     * @return
+     */
+    public ListNode FindFirstCommonNode(ListNode pHead1, ListNode pHead2) {
+        int lena = 0;
+        int lenb = 0;
+        ListNode head = pHead1;
+        while (head != null) {
+            lena++;
+            head = head.next;
+        }
+
+        head = pHead2;
+        while (head != null) {
+            lenb++;
+            head = head.next;
+        }
+
+        int diff = 0;
+        if (lena > lenb) {
+            diff = lena - lenb;
+            while (diff > 0) {
+                diff--;
+                pHead1 = pHead1.next;
+            }
+
+        } else {
+            diff = lenb - lena;
+            while (diff > 0) {
+                diff--;
+                pHead2 = pHead2.next;
+            }
+        }
+
+        while (pHead1 != null && pHead2 != null) {
+            if (pHead1 == pHead2) {
+                return pHead1;
+            }
+
+            pHead1 = pHead1.next;
+            pHead2 = pHead2.next;
+        }
+        return null;
+    }
+
+    /**
+     * 题目描述
+     * 统计一个数字在排序数组中出现的次数。
+     * 1 3 4 4 5 6
+     *
+     * @param array
+     * @param k
+     * @return
+     */
+    public int GetNumberOfK(int[] array, int k) {
+        if (array.length == 0) {
+            return 0;
+        }
+
+        int left = getLeftK(array, k);
+        int last = getLastK(array, k);
+        if (left == -1 || last == -1) {
+            return 0;
+        }
+        return last - left + 1;
+    }
+
+    private int getLeftK(int[] array, int k) {
+        int left = 0;
+        int right = array.length - 1;
+        int mid;
+        while (left < right) {
+            mid = (left + right) / 2;
+            int midValue = array[mid];
+            if (midValue < k) {
+                left = mid + 1;
+            } else if (midValue >= k) {
+                right = mid;
+            }
+            if (right - left == 1) {
+                break;
+            }
+        }
+
+        return array[left] == k ? left : array[right] == k ? right : -1;
+    }
+
+    private int getLastK(int[] array, int k) {
+        int left = 0;
+        int right = array.length - 1;
+        int mid;
+        while (left < right) {
+            mid = (left + right) / 2;
+            int midValue = array[mid];
+            if (midValue <= k) {
+                left = mid;
+            } else if (midValue > k) {
+                right = mid - 1;
+            }
+            if (right - left == 1) {
+                break;
+            }
+        }
+
+        return array[right] == k ? right : array[left] == k ? left : -1;
+    }
+
+    /**
+     * 题目描述
+     * 输入一棵二叉树，求该树的深度。从根结点到叶结点依次经过的结点（含根、叶结点）形成树的一条路径，最长路径的长度为树的深度。
+     *
+     * @param root
+     * @return
+     */
+    public int TreeDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+
+        return Math.max(TreeDepth(root.left), TreeDepth(root.right)) + 1;
+    }
+
+    /**
+     * 题目描述
+     * 输入一棵二叉树，判断该二叉树是否是平衡二叉树。
+     *
+     * @param root
+     * @return
+     */
+    public boolean IsBalanced_Solution(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+
+        return getHeight(root) != -1;
+    }
+
+    private int getHeight(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+
+        int leftHeight = getHeight(root.left);
+        int rightHeight = getHeight(root.right);
+        //补丁
+        if (leftHeight == -1 || rightHeight == -1) {
+            return -1;
+        }
+
+        if (Math.abs(leftHeight - rightHeight) > 1) {
+            return -1;
+        } else {
+            return Math.max(leftHeight, rightHeight) + 1;
+        }
+    }
+
+
+
 
     // Definition for binary tree
     public static class TreeNode {
