@@ -1,4 +1,4 @@
-import question.Solution;
+import question.solution2.S1;
 
 /**
  * for java code
@@ -8,13 +8,8 @@ import question.Solution;
 public class Main {
 
     public static void main(String[] args) {
-        Solution solution = new Solution();
+        S1 s1 = new S1();
 
-        int pre[] = {1, 2, 4, 7, 3, 5, 6, 8};
-        int in[] = {4, 7, 2, 1, 5, 3, 8, 6};
-        Solution.TreeNode tree = solution.reConstructBinaryTree(pre, in);
-
-        solution.printTree(tree);
-
+        s1.duplicate(new int[]{2, 4, 2, 1, 4}, 5, new int[]{});
     }
 }
