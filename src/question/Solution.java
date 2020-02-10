@@ -3,6 +3,7 @@ package question;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -1463,8 +1464,869 @@ public class Solution {
         }
     }
 
+    /**
+     * 题目描述
+     * 如何得到一个数据流中的中位数？如果从数据流中读出奇数个数值，
+     * 那么中位数就是所有数值排序之后位于中间的数值。如果从数据流中读出偶数个数值，
+     * 那么中位数就是所有数值排序之后中间两个数的平均值。
+     * 我们使用Insert()方法读取数据流，使用GetMedian()方法获取当前读取数据的中位数。
+     */
+    public ArrayList<Integer> list = new ArrayList<>();
+    /**
+     * 题目描述
+     * 请实现一个函数用来找出字符流中第一个只出现一次的字符。
+     * 例如，当从字符流中只读出前两个字符"go"时，第一个只出现一次的字符是"g"。
+     * 当从该字符流中读出前六个字符“google"时，第一个只出现一次的字符是"l"。
+     * 输出描述:
+     * 如果当前字符流没有存在出现一次的字符，返回#字符。
+     *
+     * @param ch
+     */
+    int stream[] = new int[256];
+    int curIndex = 1;
+    /**
+     * 题目描述
+     * 给定一棵二叉搜索树，请找出其中的第k小的结点。例如，（5，3，7，2，4，6，8）中，按结点数值大小顺序第三小结点的值为4。
+     *
+     * @param pRoot
+     * @param k
+     * @return
+     */
+    int cur = 0;
+    private int index = -1; //细节，注意这里为-1。
 
+    /**
+     * 题目描述
+     * 一个整型数组里除了两个数字之外，其他的数字都出现了两次。请写程序找出这两个只出现一次的数字。
+     *
+     * @param array
+     * @param num1
+     * @param num2
+     */
+    public void FindNumsAppearOnce(int[] array, int num1[], int num2[]) {
+        if (array.length < 2) {
+            return;
+        }
 
+        int temp = 0;
+        for (int anArray : array) {
+            temp = temp ^ anArray;
+        }
+
+        int index = 0;
+        while ((temp & 1) == 0) {
+            temp = temp >> 1;
+            ++index;
+        }
+
+        int num_1 = 0;
+        int num_2 = 0;
+        for (int anArray : array) {
+            if (isBit0(anArray, index)) {
+                num_1 ^= anArray;
+            } else {
+                num_2 ^= anArray;
+            }
+        }
+        num1[0] = num_1;
+        num2[0] = num_2;
+    }
+
+    private Boolean isBit0(int num, int index) {
+        num = num >> index;
+        return (num & 1) == 0;
+    }
+
+    /**
+     * 题目描述
+     * 输入一个递增排序的数组和一个数字S，在数组中查找两个数，使得他们的和正好是S，如果有多对数字的和等于S，输出两个数的乘积最小的。
+     * 输出描述:
+     *
+     * @param array
+     * @param sum
+     * @return
+     */
+    public ArrayList<Integer> FindNumbersWithSum(int[] array, int sum) {
+        ArrayList<Integer> list = new ArrayList<>();
+        boolean flag = false;
+        int start = 0;
+        int end = array.length - 1;
+
+        while (start < end) {
+            int addSum = array[start] + array[end];
+            if (addSum == sum) {
+                flag = true;
+                break;
+            } else if (addSum < sum) {
+                start++;
+            } else {
+                end--;
+            }
+        }
+
+        if (flag) {
+            if (array[start] < array[end]) {
+                list.add(array[start]);
+                list.add(array[end]);
+            } else {
+                list.add(array[end]);
+                list.add(array[start]);
+            }
+        }
+        return list;
+    }
+
+    /**
+     * @param sum
+     * @return
+     */
+    public ArrayList<ArrayList<Integer>> FindContinuousSequence(int sum) {
+        ArrayList<ArrayList<Integer>> list = new ArrayList<>();
+        if (sum <= 0) {
+            return list;
+        }
+
+        int small = 1;
+        int big = 2;
+        int tmp = small + big;
+        while (small < big && small <= sum / 2) {
+            // int tmp = (small + big) * (big - small + 1) / 2;
+            if (tmp > sum) {
+                tmp -= small;
+                small++;
+            } else if (tmp == sum) {
+                System.out.println("small:" + small + " big:" + big);
+                ArrayList<Integer> res = new ArrayList<>();
+                for (int i = small; i <= big; i++) {
+                    res.add(i);
+                }
+                list.add(res);
+                big++;
+                tmp += big;
+            } else {
+                big++;
+                tmp += big;
+            }
+        }
+
+        return list;
+    }
+
+    /**
+     * 题目描述
+     * 汇编语言中有一种移位指令叫做循环左移（ROL），现在有个简单的任务，就是用字符串模拟这个指令的运算结果。
+     * 对于一个给定的字符序列S，请你把其循环左移K位后的序列输出。
+     * 例如，字符序列S=”abcXYZdef”,要求输出循环左移3位后的结果，即“XYZdefabc”。是不是很简单？OK，搞定它！
+     *
+     * @param str
+     * @param n
+     * @return
+     */
+    public String LeftRotateString(String str, int n) {
+        if (str.length() == 0) {
+            return str;
+        }
+
+        char cs[] = str.toCharArray();
+        reverseStr(cs, 0, n - 1);
+        reverseStr(cs, n, str.length() - 1);
+        reverseStr(cs, 0, str.length() - 1);
+        return String.valueOf(cs);
+    }
+
+    public String ReverseSentence(String str) {
+        char cs[] = str.toCharArray();
+        int start = 0;
+        int end = str.length() - 1;
+        int flag = 0;
+        for (int i = 0; i <= end; i++) {
+            if (cs[i] == ' ') {
+                reverseStr(cs, flag, i - 1);
+                flag = i + 1;
+            } else if (i == end) {
+                reverseStr(cs, flag, i);
+            }
+        }
+
+        reverseStr(cs, start, end);
+        return String.valueOf(cs);
+    }
+
+    private void reverseStr(char[] chars, int start, int end) {
+        while (start < end) {
+            char c = chars[start];
+            chars[start] = chars[end];
+            chars[end] = c;
+            start++;
+            end--;
+        }
+    }
+
+    /**
+     * 判断数组是否连续
+     *
+     * @param numbers
+     * @return
+     */
+    public boolean isContinuous(int[] numbers) {
+        int nums[] = new int[14];
+        int maxValue = -1;
+        int minValue = -1;
+        for (int tmp : numbers) {
+            nums[tmp]++;
+            if (tmp == 0) {
+                continue;
+            }
+
+            if (nums[tmp] > 1) {
+                return false;
+            }
+
+            if (minValue == -1) {
+                minValue = tmp;
+            }
+            if (maxValue == -1) {
+                maxValue = tmp;
+            }
+
+            if (minValue > tmp) {
+                minValue = tmp;
+            }
+            if (maxValue < tmp) {
+                maxValue = tmp;
+            }
+        }
+
+        return maxValue - minValue <= numbers.length - 1;
+    }
+
+    /**
+     * 题目描述
+     * 每年六一儿童节,牛客都会准备一些小礼物去看望孤儿院的小朋友,今年亦是如此。
+     * HF作为牛客的资深元老,自然也准备了一些小游戏。
+     * 其中,有个游戏是这样的:首先,让小朋友们围成一个大圈。
+     * 然后,他随机指定一个数m,让编号为0的小朋友开始报数。
+     * 每次喊到m-1的那个小朋友要出列唱首歌,然后可以在礼品箱中任意的挑选礼物,
+     * 并且不再回到圈中,从他的下一个小朋友开始,
+     * 继续0...m-1报数....这样下去....直到剩下最后一个小朋友,
+     * 可以不用表演,并且拿到牛客名贵的“名侦探柯南”典藏版(名额有限哦!!^_^)。
+     * 请你试着想下,哪个小朋友会得到这份礼品呢？(注：小朋友的编号是从0到n-1)
+     * <p>
+     * 如果没有小朋友，请返回-1
+     * <p>
+     * 约瑟夫环公式
+     *
+     * @param n
+     * @param m
+     * @return
+     */
+    public int LastRemaining_Solution(int n, int m) {
+        //1. 递归
+        // if (n == 0) {
+        //     return 0;
+        // }
+        // if (n == 1) {
+        //     return 1;
+        // }
+        //
+        // return (LastRemaining_Solution(n - 1, m) + m) % n;
+
+        // 2.模拟
+        LinkedList<Integer> list = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            list.add(i);
+        }
+
+        int offset = 0;
+        while (list.size() > 1) {
+            offset = (offset + m - 1) % list.size();
+            list.remove(offset);
+        }
+
+        return list.size() == 1 ? list.get(0) : -1;
+    }
+
+    public int Sum_Solution(int n) {
+        int ans = n;
+        boolean flag = ans > 0 && ((ans += Sum_Solution(n - 1)) > 0);
+        return ans;
+    }
+
+    /**
+     * 题目描述
+     * 写一个函数，求两个整数之和，要求在函数体内不得使用+、-、*、/四则运算符号。
+     *
+     * <p>
+     * 链接：https://www.nowcoder.com/questionTerminal/59ac416b4b944300b617d4f7f111b215?f=discussion
+     * 来源：牛客网
+     * <p>
+     * 首先看十进制是如何做的： 5+7=12，三步走
+     * 第一步：相加各位的值，不算进位，得到2。
+     * 第二步：计算进位值，得到10. 如果这一步的进位值为0，那么第一步得到的值就是最终结果。
+     * <p>
+     * 第三步：重复上述两步，只是相加的值变成上述两步的得到的结果2和10，得到12。
+     * <p>
+     * 同样我们可以用三步走的方式计算二进制值相加： 5-101，7-111 第一步：相加各位的值，不算进位，得到010，二进制每位相加就相当于各位做异或操作，101^111。
+     * <p>
+     * 第二步：计算进位值，得到1010，相当于各位做与操作得到101，再向左移一位得到1010，(101&111)<<1。
+     * <p>
+     * 第三步重复上述两步， 各位相加 010^1010=1000，进位值为100=(010&1010)<<1。
+     * 继续重复上述两步：1000^100 = 1100，进位值为0，跳出循环，1100为最终结果。
+     *
+     * @param num1
+     * @param num2
+     * @return
+     */
+    public int Add(int num1, int num2) {
+        while (num2 != 0) {
+            int temp = num1 ^ num2;
+            num2 = (num1 & num2) << 1;
+            num1 = temp;
+        }
+        return num1;
+    }
+
+    /**
+     * 题目描述
+     * 将一个字符串转换成一个整数，要求不能使用字符串转换整数的库函数。 数值为0或者字符串不是一个合法的数值则返回0
+     * 输入描述:
+     * 输入一个字符串,包括数字字母符号,可以为空
+     * 输出描述:
+     * 如果是合法的数值表达则返回该数字，否则返回0
+     *
+     * @param str
+     * @return
+     */
+    public int StrToInt(String str) {
+        if (str == null || str.equals("") || str.equals("+") || str.equals("-")) {
+            return 0;
+        }
+
+        boolean sign = true; //符号位
+        int num = 0;
+        for (int i = 0; i < str.length(); i++) {
+            int m = str.charAt(i) - '0';
+            if (m >= 0 && m <= 9) {
+                if (sign && (num > Integer.MAX_VALUE / 10 ||
+                        (num == Integer.MAX_VALUE / 10 && m > Integer.MAX_VALUE % 10))) {
+                    return 0;
+                }
+                if (!sign && (num > Math.abs(Integer.MIN_VALUE / 10) ||
+                        (num == Math.abs(Integer.MIN_VALUE / 10) && m > Math.abs(Integer.MIN_VALUE % 10)))) {
+                    return 0;
+                }
+                num = m + num * 10;
+            } else if ((str.charAt(i) == '-' || str.charAt(i) == '+') && i == 0) {
+                sign = str.charAt(0) == '+';
+            } else {
+                return 0;
+            }
+        }
+
+        return sign ? num : -num;
+    }
+
+    /**
+     * 题目描述
+     * 请实现一个函数用来匹配包括'.'和'*'的正则表达式。模式中的字符'.'表示任意一个字符，而'*'表示它前面的字符可以出现任意次（包含0次）。
+     * 在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串"aaa"与模式"a.a"和"ab*ac*a"匹配，但是与"aa.a"和"ab*a"均不匹配
+     *
+     * @param str
+     * @param pattern
+     * @return
+     */
+    public boolean match(char[] str, char[] pattern) {
+        if (str == null || pattern == null) {
+            return false;
+        }
+
+        int strIndex = 0;
+        int patternIndex = 0;
+        return matchCore(str, strIndex, pattern, patternIndex);
+    }
+
+    private boolean matchCore(char[] str, int strIndex, char[] pattern, int patternIndex) {
+        //越界判断
+        if (strIndex == str.length && patternIndex == pattern.length) {
+            return true;
+        }
+
+        if (strIndex != str.length && patternIndex == pattern.length) {
+            return false;
+        }
+
+        //细节是魔鬼
+        if (patternIndex + 1 < pattern.length && pattern[patternIndex + 1] == '*') {
+            if (strIndex != str.length && (str[strIndex] == pattern[patternIndex] || pattern[patternIndex] == '.')) {
+                return matchCore(str, strIndex, pattern, patternIndex + 2) ||
+                        matchCore(str, strIndex + 1, pattern, patternIndex + 2) ||
+                        matchCore(str, strIndex + 1, pattern, patternIndex);
+            } else {
+                return matchCore(str, strIndex, pattern, patternIndex + 2);
+            }
+        } else {
+            if (strIndex != str.length && (str[strIndex] == pattern[patternIndex] || pattern[patternIndex] == '.')) {
+                return matchCore(str, strIndex + 1, pattern, patternIndex + 1);
+            }
+        }
+
+        return false;
+    }
+
+    //Insert one char from stringstream
+    public void Insert(char ch) {
+        if (stream[ch] == 0) {
+            stream[ch] = curIndex++;
+        } else {
+            stream[ch] = -1;
+        }
+    }
+
+    //return the first appearence once char in current stringstream
+    public char FirstAppearingOnce() {
+        int minIndex = -1;
+        char ch = '#';
+        for (int i = 0; i < stream.length; i++) {
+            int index = stream[i];
+            if (stream[i] > 0 && (index < minIndex || minIndex == -1)) {
+                minIndex = index;
+                ch = (char) i;
+            }
+        }
+
+        return ch;
+    }
+
+    /**
+     * 题目描述
+     * 给一个链表，若其中包含环，请找出该链表的环的入口结点，否则，输出null。
+     *
+     * @param pHead
+     * @return
+     */
+    public ListNode EntryNodeOfLoop(ListNode pHead) {
+        if (pHead == null) {
+            return null;
+        }
+        //1.求是否有环
+        ListNode quick = pHead;
+        ListNode slow = pHead;
+        while (true) {
+            if (quick.next != null) {
+                quick = quick.next.next;
+                slow = slow.next;
+
+                if (quick == null) {
+                    return null;
+                }
+                if (slow == quick) {
+                    break;
+                }
+            } else {
+                return null;
+            }
+        }
+        //2.求环的长度
+        ListNode meetNode = quick;
+        int n = 0;
+        do {
+            quick = quick.next;
+            n++;
+        } while (quick != meetNode);
+
+        //3. 求相交结点
+        quick = pHead;
+        slow = pHead;
+        while (n-- > 0) {
+            quick = quick.next;
+        }
+        while (true) {
+            if (quick == slow) {
+                return quick;
+            } else {
+                quick = quick.next;
+                slow = slow.next;
+            }
+        }
+    }
+
+    /**
+     * 题目描述
+     * 在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针。
+     * 例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
+     *
+     * @param pHead
+     * @return
+     */
+    public ListNode deleteDuplication(ListNode pHead) {
+        if (pHead == null) {
+            return null;
+        }
+
+        ListNode fockHead = new ListNode(0);
+        fockHead.next = pHead;
+        ListNode pre = fockHead;
+        ListNode after = fockHead.next;
+        while (after != null) {
+            boolean flag = false;
+            while (after.next != null && after.val == after.next.val) {
+                after = after.next;
+                flag = true;
+            }
+
+            if (flag) {
+                after = after.next;
+            } else {
+                pre.next = after;
+                pre = pre.next;
+                after = after.next;
+            }
+        }
+        pre.next = null;
+        return fockHead.next;
+    }
+
+    /**
+     * 题目描述
+     * 给定一个二叉树和其中的一个结点，请找出中序遍历顺序的下一个结点并且返回。注意，树中的结点不仅包含左右子结点，同时包含指向父结点的指针。
+     *
+     * @param pNode
+     * @return
+     */
+    public TreeLinkNode GetNext(TreeLinkNode pNode) {
+        if (pNode == null) {
+            return null;
+        }
+
+        //右子树不为空，遍历求左子树
+        if (pNode.right != null) {
+            TreeLinkNode node = pNode.right;
+            while (node.left != null) {
+                node = node.left;
+            }
+            return node;
+        }
+
+        //右子树为空，看是否有父亲结点
+        while (pNode.next != null) {
+            //如果当前结点为父结点的左子树，那下一个结点就是此父结点
+            if (pNode.next.left == pNode) {
+                return pNode.next;
+            } else {
+                pNode = pNode.next;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 题目描述
+     * 请实现一个函数，用来判断一颗二叉树是不是对称的。注意，如果一个二叉树同此二叉树的镜像是同样的，定义其为对称的。
+     *
+     * @param pRoot
+     * @return
+     */
+    public boolean isSymmetrical(TreeNode pRoot) {
+        if (pRoot == null) {
+            return true;
+        }
+
+        return isSymmetrical(pRoot.left, pRoot.right);
+    }
+
+    boolean isSymmetrical(TreeNode left, TreeNode right) {
+        if (left == null && right == null) {
+            return true;
+        }
+        if ((left == null && right != null) || (left != null && right == null)) {
+            return false;
+        }
+
+        if (left.val == right.val) {
+            return isSymmetrical(left.left, right.right) && isSymmetrical(left.right, right.left);
+
+        }
+
+        return false;
+    }
+
+    /**
+     * 题目描述
+     * 请实现两个函数，分别用来序列化和反序列化二叉树
+     * <p>
+     * 二叉树的序列化是指：把一棵二叉树按照某种遍历方式的结果以某种格式保存为字符串，从而使得内存中建立起来的二叉树可以持久保存。
+     * 序列化可以基于先序、中序、后序、层序的二叉树遍历方式来进行修改，
+     * 序列化的结果是一个字符串，序列化时通过 某种符号表示空节点（#），以 ！ 表示一个结点值的结束（value!）。
+     * <p>
+     * 二叉树的反序列化是指：根据某种遍历顺序得到的序列化字符串结果str，重构二叉树。
+     *
+     * @param root
+     * @return
+     */
+    public String Serialize(TreeNode root) {
+        StringBuilder sb = new StringBuilder();
+        if (root == null) {
+            sb.append("#!");
+        } else {
+            sb.append(root.val).append("!");
+            sb.append(Serialize(root.left));
+            sb.append(Serialize(root.right));
+        }
+
+        return sb.toString();
+    }
+
+    public TreeNode Deserialize(String str) {
+        String[] strs = str.split("!");
+        return Deserialize(strs);
+    }
+
+    private TreeNode Deserialize(String[] strs) {
+        index++; //不管是否为null结点，都加1
+        System.out.println(strs[index]);
+        if (index > strs.length - 1) {
+            return null;
+        }
+
+        if (strs[index].equals("#")) {
+            return null;
+        }
+
+        TreeNode node = new TreeNode(Integer.parseInt(strs[index]));
+        node.left = Deserialize(strs);
+        node.right = Deserialize(strs);
+        return node;
+    }
+
+    // 二叉搜索树的中序遍历是有序的。
+    TreeNode KthNode(TreeNode pRoot, int k) {
+        TreeNode node = null;
+        if (pRoot != null) {
+            node = KthNode(pRoot.left, k);
+            if (node != null) {
+                return node;
+            }
+
+            cur++;
+            if (k == cur) {
+                return pRoot;
+            }
+            node = KthNode(pRoot.right, k);
+        }
+        return node;
+    }
+
+    public void Insert(Integer num) {
+
+        list.add(num);
+        Collections.sort(list);
+    }
+
+    public Double GetMedian() {
+
+        int len = list.size();
+
+        double avg = 0;
+
+        if (len % 2 == 1) {
+            avg = list.get(len / 2);
+        } else {
+            avg = (list.get(len / 2) + list.get(len / 2 - 1)) / 2.0;
+        }
+        return avg;
+
+    }
+
+    /**
+     * 题目描述
+     * 给定一个数组和滑动窗口的大小，找出所有滑动窗口里数值的最大值。例如，
+     * 如果输入数组{2,3,4,2,6,2,5,1}及滑动窗口的大小3，那么一共存在6个滑动窗口，
+     * 他们的最大值分别为{4,4,6,6,6,5}； 针对数组{2,3,4,2,6,2,5,1}的滑动窗口有以下6个： {[2,3,4],2,6,2,5,1}，
+     * {2,[3,4,2],6,2,5,1}， {2,3,[4,2,6],2,5,1}， {2,3,4,[2,6,2],5,1}， {2,3,4,2,[6,2,5],1}， {2,3,4,2,6,[2,5,1]}。
+     *
+     * @param num
+     * @param size
+     * @return
+     */
+    public ArrayList<Integer> maxInWindows(int[] num, int size) {
+        ArrayList<Integer> res = new ArrayList<>();
+        if (num == null || size == 0) {
+            return res;
+        }
+        Deque<Integer> max = new LinkedList<>();
+        for (int i = 0; i < num.length; i++) {
+            while (!max.isEmpty() && num[max.peekLast()] < num[i]) {
+                max.pollLast();
+            }
+            max.offerLast(i);
+            if (max.peekFirst() <= i - size) {
+                max.pollFirst();
+            }
+            if (i >= size - 1) {
+                res.add(max.peekFirst());
+            }
+        }
+        for (int i = 0; i < res.size(); i++) {
+            res.set(i, num[res.get(i)]);
+        }
+        return res;
+    }
+
+    public boolean hasPath(char[] matrix, int rows, int cols, char[] str) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (findPath(new String(matrix), i, j, rows, cols, str, 0)) {
+                    return true;
+                }
+            }
+
+        }
+
+        return false;
+
+    }
+
+    /**
+     * 题目描述
+     * 请设计一个函数，用来判断在一个矩阵中是否存在一条包含某字符串所有字符的路径。路径可以从矩阵中的任意一个格子开始，
+     * 每一步可以在矩阵中向左，向右，向上，向下移动一个格子。
+     * 如果一条路径经过了矩阵中的某一个格子，则该路径不能再进入该格子。
+     * 例如 a b c e s f c s a d e e 矩阵中包含一条字符串"bcced"的路径，
+     * 但是矩阵中不包含"abcb"路径，因为字符串的第一个字符b占据了矩阵中的第一行第二个格子之后，路径不能再次进入该格子。
+     *
+     * @param oid
+     * @param x
+     * @param y
+     * @param rows
+     * @param cols
+     * @param str
+     * @param start
+     * @return
+     */
+    public boolean findPath(String oid, int x, int y,
+                            int rows, int cols, char[] str, int start) {
+
+        char matrix[] = oid.toCharArray();
+
+        if (x < 0 || x >= rows || y < 0 || y >= cols) {
+            return false;
+        }
+
+        if (matrix[x * cols + y] == str[start]) {
+            matrix[x * cols + y] = '#';
+            start++;
+            if ((start) == str.length) {
+                return true;
+            }
+        } else {
+            return false;
+        }
+
+        return findPath(new String(matrix), x - 1, y, rows, cols, str, start)
+                || findPath(new String(matrix), x + 1, y, rows, cols, str, start)
+                || findPath(new String(matrix), x, y - 1, rows, cols, str, start)
+                || findPath(new String(matrix), x, y + 1, rows, cols, str, start);
+    }
+
+    /**
+     * 题目描述
+     * 地上有一个m行和n列的方格。一个机器人从坐标0,0的格子开始移动，每一次只能向左，右，上，下四个方向移动一格，
+     * 但是不能进入行坐标和列坐标的数位之和大于k的格子。 例如，当k为18时，
+     * 机器人能够进入方格（35,37），因为3+5+3+7 = 18。但是，它不能进入方格（35,38），
+     * 因为3+5+3+8 = 19。请问该机器人能够达到多少个格子？
+     *
+     * @param threshold
+     * @param rows
+     * @param cols
+     * @return
+     */
+    public int movingCount(int threshold, int rows, int cols) {
+        char arr[] = new char[rows * cols];
+
+        return findPath(arr, threshold, 0, 0, rows, cols);
+    }
+
+    public int findPath(char arr[], int k, int x, int y, int rows,
+                        int cols) {
+
+        if (x < 0 || y < 0 || x >= cols || y >= rows || arr[x * rows + y] == '#') {
+            return 0;
+        }
+        if ((getCount(x) + getCount(y)) > k) {
+            return 0;
+        }
+
+        arr[x * rows + y] = '#';
+
+        return
+                findPath(arr, k, x - 1, y, rows, cols) +
+                        findPath(arr, k, x + 1, y, rows, cols) +
+                        findPath(arr, k, x, y - 1, rows, cols) +
+                        findPath(arr, k, x, y + 1, rows, cols)
+                        + 1;
+    }
+
+    public int getCount(int n) {
+
+        int sum = 0;
+        while (n != 0) {
+            int c = n % 10;
+            sum += c;
+            n = n / 10;
+        }
+
+        return sum;
+    }
+
+    /**
+     * 题目描述
+     * 给你一根长度为n的绳子，请把绳子剪成整数长的m段（m、n都是整数，n>1并且m>1），每段绳子的长度记为k[0],k[1],...,k[m]。
+     * 请问k[0]xk[1]x...xk[m]可能的最大乘积是多少？
+     * 例如，当绳子的长度是8时，我们把它剪成长度分别为2、3、3的三段，此时得到的最大乘积是18。
+     * 输入描述:
+     * 输入一个数n，意义见题面。（2 <= n <= 60）
+     * 输出描述:
+     * 输出答案。
+     *
+     * @param n
+     * @return
+     */
+    public int cutRope(int n) {
+        // n<=3的情况，m>1必须要分段，例如：3必须分成1、2；1、1、1 ，n=3最大分段乘积是2,
+        if (n == 2) {
+            return 1;
+        }
+        if (n == 3) {
+            return 2;
+        }
+        int[] dp = new int[n + 1];
+        /*
+        下面3行是n>=4的情况，跟n<=3不同，4可以分很多段，比如分成1、3，
+        这里的3可以不需要再分了，因为3分段最大才2，不分就是3。记录最大的。
+         */
+        dp[1] = 1;
+        dp[2] = 2;
+        dp[3] = 3;
+        int res = 0;//记录最大的
+        for (int i = 4; i <= n; i++) {
+            for (int j = 1; j <= i / 2; j++) {
+                res = Math.max(res, dp[j] * dp[i - j]);
+            }
+            dp[i] = res;
+        }
+        return dp[n];
+    }
+
+    public class TreeLinkNode {
+        int val;
+        TreeLinkNode left = null;
+        TreeLinkNode right = null;
+        TreeLinkNode next = null;
+
+        TreeLinkNode(int val) {
+            this.val = val;
+        }
+    }
 
     // Definition for binary tree
     public static class TreeNode {
